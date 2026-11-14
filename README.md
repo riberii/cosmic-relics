@@ -3,8 +3,9 @@
 > **NASA International Space Apps Challenge 2026**  
 > **Challenge:** Telling the story of hardware left across the solar system for school-age space enthusiasts  
 > **Team:** Pristine Cascade  
-> **Live Demo:** [Open Interactive Web Experience](https://github.com/) *(or open `index.html` in any browser)*  
-> **Slide Deck:** [7-Slide Project Demonstration](slides.html)
+> **Repository:** [https://github.com/riberii/cosmic-relics](https://github.com/riberii/cosmic-relics)  
+> **Live Web Experience (GitHub Pages):** [https://riberii.github.io/cosmic-relics/](https://riberii.github.io/cosmic-relics/)  
+> **Slide Presentation (7-Slide PDF):** [View Cosmic_Relics_7_Slides.pdf](https://github.com/riberii/cosmic-relics/blob/main/Cosmic_Relics_7_Slides.pdf)
 
 ---
 
