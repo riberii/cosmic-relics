@@ -10,7 +10,7 @@
   <style>
     :root {
       --bg: #090c15;
-      --card-bg: rgba(18, 24, 43, 0.85);
+      --card-bg: rgba(18, 24, 43, 0.95);
       --accent: #38bdf8;
       --accent-alt: #a855f7;
       --accent-gold: #fbbf24;
@@ -33,91 +33,147 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       padding: 1.5rem;
       background-image: 
         radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
         radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
     }
 
-    /* Top Controls */
+    /* Top Controls Bar */
     .controls {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      max-width: 1000px;
-      margin-bottom: 1rem;
-      padding: 0.5rem 1rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      backdrop-filter: blur(8px);
+      max-width: 1050px;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem 1.25rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      flex-wrap: wrap;
+      gap: 0.75rem;
     }
 
     .badge {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #34d399;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #34d399;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     .btn {
       background: rgba(56, 189, 248, 0.15);
       border: 1px solid var(--accent);
       color: #fff;
-      padding: 0.4rem 0.9rem;
-      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       cursor: pointer;
-      transition: 0.2s;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
     }
 
     .btn:hover {
       background: var(--accent);
       color: #000;
       font-weight: 700;
+      transform: translateY(-1px);
     }
 
-    /* Slide Deck Container */
+    .btn.active-mode {
+      background: var(--accent-gold);
+      color: #000;
+      border-color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    .btn-pdf {
+      background: linear-gradient(135deg, #38bdf8, #a855f7);
+      color: #000;
+      font-weight: 700;
+      border: none;
+    }
+
+    .btn-pdf:hover {
+      background: linear-gradient(135deg, #7dd3fc, #c084fc);
+      color: #000;
+    }
+
+    /* Deck Container */
     .deck-container {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1050px;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Single Slide Card */
+    .slide {
+      width: 100%;
       aspect-ratio: 16 / 9;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 16px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(56, 189, 248, 0.15);
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .slide {
-      display: none;
-      width: 100%;
-      height: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(56, 189, 248, 0.1);
       padding: 3rem 3.5rem;
+      display: flex;
       flex-direction: column;
       justify-content: space-between;
-      animation: fadeIn 0.3s ease;
-      background-size: cover;
       position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
     }
 
-    .slide.active {
+    /* In single slide mode, hide non-active slides */
+    body.single-slide-mode .slide {
+      display: none;
+    }
+
+    body.single-slide-mode .slide.active {
       display: flex;
+      animation: fadeIn 0.25s ease;
+    }
+
+    /* In scroll all mode, show all slides stacked */
+    body.scroll-all-mode .slide {
+      display: flex;
+      margin-bottom: 2rem;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.99); }
-      to { opacity: 1; transform: scale(1); }
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Slide Content Elements */
+    /* Slide Header */
     .slide-header {
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       padding-bottom: 0.75rem;
@@ -125,11 +181,11 @@
 
     .slide-tag {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: var(--accent-gold);
       text-transform: uppercase;
       letter-spacing: 0.15em;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.35rem;
     }
 
     .slide-title {
@@ -159,22 +215,23 @@
       color: var(--text-muted);
     }
 
-    /* Slide 1 - Title */
+    /* Slide 1 Hero */
     .title-slide {
       text-align: center;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 1.75rem;
     }
 
     .title-hero {
       font-family: 'Orbitron', sans-serif;
-      font-size: 3rem;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
       font-weight: 900;
       line-height: 1.1;
       background: linear-gradient(135deg, #fff 40%, var(--accent) 80%, var(--accent-alt) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
     }
 
     .title-subtitle {
@@ -186,18 +243,18 @@
     }
 
     .meta-box {
-      margin-top: 1.5rem;
+      margin-top: 1rem;
       display: inline-flex;
       gap: 2rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.75rem 2rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.85rem 2.25rem;
       border-radius: 50px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.85rem;
     }
 
-    /* Grid Layouts for Slides */
+    /* Grids */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -241,92 +298,165 @@
       margin-bottom: 0.25rem;
     }
 
-    /* Slide Navigation Dots */
+    /* Single Slide Navigation Bar */
     .nav-bar {
-      margin-top: 1rem;
+      margin-top: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
+    }
+
+    body.scroll-all-mode .nav-bar {
+      display: none;
     }
 
     .dot {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.25);
       cursor: pointer;
-      transition: 0.2s;
+      transition: all 0.2s;
     }
 
     .dot.active {
       background: var(--accent);
-      width: 24px;
+      width: 28px;
       border-radius: 10px;
     }
 
-    /* PRINT TO PDF OPTIMIZATION (Strictly 7 Pages) */
+    /* =========================================================================
+       PRINT STYLESHEET (GUARANTEED ALL 7 SLIDES PRINT CLEANLY, 1 PER PAGE)
+       ========================================================================= */
+    @page {
+      size: landscape;
+      margin: 10mm;
+    }
+
     @media print {
-      body {
-        background: #fff !important;
-        color: #000 !important;
+      html, body {
+        background: #ffffff !important;
+        color: #000000 !important;
         padding: 0 !important;
+        margin: 0 !important;
         display: block !important;
+        min-height: auto !important;
       }
+
       .controls, .nav-bar {
         display: none !important;
       }
+
       .deck-container {
-        border: none !important;
-        box-shadow: none !important;
-        max-width: 100% !important;
-        aspect-ratio: auto !important;
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        gap: 0 !important;
       }
+
+      /* ALL 7 SLIDES MUST BE VISIBLE IN PRINT */
       .slide {
         display: flex !important;
-        page-break-after: always;
-        height: 100vh;
-        max-height: 100vh;
-        padding: 2.5rem !important;
-        background: #fff !important;
-        color: #111 !important;
-        border-bottom: 2px solid #ccc;
-      }
-      .slide-title, .title-hero, h4 {
-        color: #000 !important;
-        -webkit-text-fill-color: #000 !important;
-      }
-      .info-card, .meta-box {
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        height: 180mm !important;
+        max-height: 180mm !important;
+        aspect-ratio: auto !important;
+        box-shadow: none !important;
+        border: 2px solid #334155 !important;
+        border-radius: 8px !important;
         background: #f8fafc !important;
+        color: #0f172a !important;
+        padding: 20mm !important;
+        margin: 0 0 10mm 0 !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+
+      .slide:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+        margin-bottom: 0 !important;
+      }
+
+      .slide-title, .title-hero {
+        color: #0284c7 !important;
+        -webkit-text-fill-color: #0284c7 !important;
+      }
+
+      .title-subtitle {
+        color: #0369a1 !important;
+      }
+
+      .slide-tag {
+        color: #b45309 !important;
+      }
+
+      .info-card {
+        background: #ffffff !important;
         border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+      }
+
+      .info-card h4 {
+        color: #0284c7 !important;
+      }
+
+      .info-card p, .info-card li {
         color: #1e293b !important;
       }
-      .info-card p, .slide-desc, .title-subtitle {
-        color: #334155 !important;
-      }
-      .slide-tag, .slide-footer {
-        color: #64748b !important;
-      }
+
       .highlight-stat {
-        color: #0369a1 !important;
+        color: #d97706 !important;
+      }
+
+      .meta-box {
+        background: #f1f5f9 !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+      }
+
+      .slide-footer {
+        color: #64748b !important;
+        border-top: 1px solid #cbd5e1 !important;
       }
     }
   </style>
 </head>
-<body>
+<body class="single-slide-mode">
 
   <!-- Controls Bar -->
-  <div class="controls">
-    <div class="badge">NASA SPACE APPS DEMONSTRATION • STRICT 7-SLIDE DECK</div>
-    <div style="display: flex; gap: 0.5rem;">
-      <button class="btn" onclick="prevSlide()">◀ Previous</button>
-      <span id="slide-num" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; align-self: center; padding: 0 0.5rem;">Slide 1 / 7</span>
-      <button class="btn" onclick="nextSlide()">Next ▶</button>
-      <button class="btn" style="background: var(--accent); color: #000; font-weight: bold;" onclick="window.print()">🖨️ Export PDF (7 Slides)</button>
-    </div>
-  </div>
+  <header class="controls no-print">
+    <div class="badge">NASA SPACE APPS • 7-SLIDE PROJECT DEMONSTRATION</div>
+    
+    <div class="btn-group">
+      <!-- Mode Toggle Buttons -->
+      <button class="btn" id="btn-mode-single" onclick="setMode('single')">
+        🖥️ Slide-by-Slide
+      </button>
+      <button class="btn" id="btn-mode-scroll" onclick="setMode('scroll')">
+        📜 View All 7 Slides Stacked
+      </button>
 
-  <!-- Deck Wrapper -->
-  <div class="deck-container">
+      <!-- Navigation for Slide Mode -->
+      <div id="slide-nav-controls" style="display: flex; gap: 0.35rem; align-items: center;">
+        <button class="btn" onclick="prevSlide()">◀ Prev</button>
+        <span id="slide-num" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; padding: 0 0.4rem;">Slide 1 / 7</span>
+        <button class="btn" onclick="nextSlide()">Next ▶</button>
+      </div>
+
+      <!-- Export Button -->
+      <button class="btn btn-pdf" onclick="window.print()">
+        🖨️ Export PDF (All 7 Slides)
+      </button>
+    </div>
+  </header>
+
+  <!-- Deck Container -->
+  <main class="deck-container">
 
     <!-- SLIDE 1: Title & Overview -->
     <section class="slide active title-slide" id="slide-1">
@@ -579,10 +709,10 @@
       </div>
     </section>
 
-  </div>
+  </main>
 
-  <!-- Slide Dots Navigation -->
-  <div class="nav-bar" id="dots-bar">
+  <!-- Slide Dots Navigation (for Single-Slide Mode) -->
+  <nav class="nav-bar no-print" id="dots-bar">
     <div class="dot active" onclick="goToSlide(1)"></div>
     <div class="dot" onclick="goToSlide(2)"></div>
     <div class="dot" onclick="goToSlide(3)"></div>
@@ -590,11 +720,38 @@
     <div class="dot" onclick="goToSlide(5)"></div>
     <div class="dot" onclick="goToSlide(6)"></div>
     <div class="dot" onclick="goToSlide(7)"></div>
-  </div>
+  </nav>
 
   <script>
     let currentSlide = 1;
     const totalSlides = 7;
+    let mode = 'single'; // 'single' or 'scroll'
+
+    function setMode(newMode) {
+      mode = newMode;
+      const body = document.body;
+      const btnSingle = document.getElementById('btn-mode-single');
+      const btnScroll = document.getElementById('btn-mode-scroll');
+      const navControls = document.getElementById('slide-nav-controls');
+      const dotsBar = document.getElementById('dots-bar');
+
+      if (mode === 'scroll') {
+        body.classList.remove('single-slide-mode');
+        body.classList.add('scroll-all-mode');
+        btnScroll.classList.add('active-mode');
+        btnSingle.classList.remove('active-mode');
+        navControls.style.display = 'none';
+        dotsBar.style.display = 'none';
+      } else {
+        body.classList.remove('scroll-all-mode');
+        body.classList.add('single-slide-mode');
+        btnSingle.classList.add('active-mode');
+        btnScroll.classList.remove('active-mode');
+        navControls.style.display = 'flex';
+        dotsBar.style.display = 'flex';
+        showSlide(currentSlide);
+      }
+    }
 
     function showSlide(num) {
       if (num < 1) num = 1;
@@ -630,12 +787,17 @@
 
     // Keyboard navigation
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        nextSlide();
-      } else if (e.key === 'ArrowLeft') {
-        prevSlide();
+      if (mode === 'single') {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+          prevSlide();
+        }
       }
     });
+
+    // Initialize mode
+    setMode('single');
   </script>
 </body>
 </html>
