@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmic Relics | NASA's Solar Time Capsule</title>
+  <meta name="description" content="Discover the silent sentinels, robotic pioneers, and historic hardware NASA has left across our solar system. An interactive space science experience for school-age explorers.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070913;
+      --card-bg: rgba(18, 24, 43, 0.75);
+      --card-border: rgba(56, 189, 248, 0.2);
+      --card-border-hover: rgba(56, 189, 248, 0.6);
+      --accent-cyan: #38bdf8;
+      --accent-amber: #fbbf24;
+      --accent-violet: #a855f7;
+      --accent-emerald: #34d399;
+      --accent-rose: #f43f5e;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --font-display: 'Orbitron', -apple-system, sans-serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(168, 85, 247, 0.1), transparent),
+        radial-gradient(ellipse 50% 30% at 20% 80%, rgba(251, 191, 36, 0.08), transparent);
+    }
+
+    /* Starfield Canvas Background */
+    #star-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Container */
+    .app-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 4rem;
+    }
+
+    /* Navbar / Header */
+    header.hero-header {
+      padding: 2.5rem 0 2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .badge-sub {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1.25rem;
+    }
+
+    .badge-sub .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    h1.hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan) 80%, var(--accent-violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 40px rgba(56, 189, 248, 0.25);
+    }
+
+    p.hero-desc {
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      color: var(--text-muted);
+      max-width: 780px;
+      margin: 0 auto 1.75rem;
+      font-weight: 400;
+    }
+
+    /* Top Control HUD */
+    .hud-bar {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-action:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-cyan);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
+    }
+
+    .btn-action.active {
+      background: var(--accent-cyan);
+      color: #070913;
+      font-weight: 700;
+      border-color: var(--accent-cyan);
+    }
+
+    /* Solar System Mini Map Nav */
+    .system-nav-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-label {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dest-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .dest-tab {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .dest-tab:hover {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .dest-tab.active {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    }
+
+    .dest-tab .planet-icon {
+      font-size: 1.75rem;
+    }
+
+    .dest-tab .dest-name {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .dest-tab .dest-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* Filters Bar */
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-chip:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .filter-chip.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    /* Hardware Relics Grid */
+    .relics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.75rem;
+      margin-bottom: 4rem;
+    }
+
+    .relic-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .relic-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+
+    .relic-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--card-border-hover);
+      box-shadow: 0 16px 40px rgba(56, 189, 248, 0.18);
+    }
+
+    .relic-card:hover::before {
+      opacity: 1;
+      height: 5px;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .relic-loc-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .tag-moon { background: rgba(226, 232, 240, 0.15); color: #e2e8f0; border: 1px solid rgba(226, 232, 240, 0.3); }
+    .tag-mars { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+    .tag-deep { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .tag-saturn { background: rgba(251, 191, 36, 0.15); color: #fde047; border: 1px solid rgba(251, 191, 36, 0.3); }
+
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .status-active { background: rgba(52, 211, 153, 0.15); color: var(--accent-emerald); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .status-silent { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.3); }
+    .status-heroic { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); border: 1px solid rgba(244, 63, 94, 0.3); }
+
+    .relic-name {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+
+    .relic-years {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      margin-bottom: 1rem;
+    }
+
+    .relic-highlight-box {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 3px solid var(--accent-cyan);
+      padding: 0.75rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 1.25rem;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+
+    .relic-specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.75rem;
+      border-radius: 8px;
+    }
+
+    .spec-item {
+      font-size: 0.8rem;
+    }
+
+    .spec-label {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .spec-val {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .relic-science {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-inspect {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent-cyan);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-inspect:hover {
+      background: var(--accent-cyan);
+      color: #070913;
+      font-weight: 700;
+    }
+
+    /* Interactive Hardware Inspection Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(7, 9, 19, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #0f1629;
+      border: 1px solid var(--accent-cyan);
+      box-shadow: 0 0 50px rgba(56, 189, 248, 0.25);
+      border-radius: 20px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2.25rem;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--accent-rose);
+    }
+
+    .modal-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .schematic-box {
+      background: #090e1c;
+      border: 1px dashed rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      position: relative;
+    }
+
+    .schematic-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-amber);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .parts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .part-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.9rem;
+      transition: 0.2s;
+    }
+
+    .part-card:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.06);
+    }
+
+    .part-name {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 0.35rem;
+    }
+
+    .part-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .audio-telemetry-panel {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .telemetry-info {
+      font-size: 0.85rem;
+    }
+
+    .telemetry-info strong {
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+    }
+
+    /* Section: Interactive Mission Quiz & Certificate */
+    .feature-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      backdrop-filter: blur(12px);
+      margin-bottom: 3.5rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      position: relative;
+    }
+
+    .sec-tag {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-amber);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .sec-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+
+    .sec-desc {
+      color: var(--text-muted);
+      max-width: 720px;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    /* Quiz Styling */
+    .quiz-container {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.75rem;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .quiz-progress {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 0.75rem;
+    }
+
+    .quiz-question {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      color: #fff;
+    }
+
+    .quiz-options {
+      display: grid;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .quiz-option {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .quiz-option:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: var(--accent-cyan);
+      transform: translateX(4px);
+    }
+
+    .quiz-option.correct {
+      background: rgba(52, 211, 153, 0.25) !important;
+      border-color: var(--accent-emerald) !important;
+      color: #a7f3d0 !important;
+      font-weight: 700;
+    }
+
+    .quiz-option.incorrect {
+      background: rgba(244, 63, 94, 0.25) !important;
+      border-color: var(--accent-rose) !important;
+      color: #fecdd3 !important;
+    }
+
+    .quiz-feedback {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+      display: none;
+      line-height: 1.5;
+    }
+
+    /* Certificate Box */
+    .certificate-wrapper {
+      display: none;
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+      border: 3px double var(--accent-amber);
+      border-radius: 16px;
+      box-shadow: 0 0 50px rgba(251, 191, 36, 0.2);
+      margin-top: 2rem;
+      position: relative;
+    }
+
+    .certificate-wrapper::before {
+      content: '★ NASA SPACE EXPLORER CADET ★';
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent-amber);
+      letter-spacing: 0.2em;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .cert-heading {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .cert-sub {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cert-name {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--accent-cyan);
+      border-bottom: 2px solid var(--accent-cyan);
+      display: inline-block;
+      padding: 0 2rem 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cert-text {
+      max-width: 650px;
+      margin: 0 auto 2rem;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      line-height: 1.7;
+    }
+
+    .cert-meta {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent-amber);
+    }
+
+    /* Planetary Protection & Time Capsule Section */
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .story-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .story-card h4 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: var(--accent-cyan);
+      margin-bottom: 0.75rem;
+    }
+
+    .story-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 0 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    footer a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Print styles for certificate */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .certificate-wrapper, .certificate-wrapper * {
+        visibility: visible;
+      }
+      .certificate-wrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: 4px solid #000;
+        color: #000;
+        background: #fff;
+      }
+      .cert-heading, .cert-name, .cert-sub, .cert-text {
+        color: #000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Starfield Canvas -->
+  <canvas id="star-canvas"></canvas>
+
+  <div class="app-container">
+    
+    <!-- Hero Header -->
+    <header class="hero-header">
+      <div class="badge-sub">
+        <span class="pulse-dot"></span>
+        NASA Space Apps Challenge 2026 Project
+      </div>
+      <h1 class="hero-title">COSMIC RELICS</h1>
+      <p class="hero-desc">
+        Since the 1960s, NASA has left hardware across the Moon, Mars, and interstellar deep space.
+        Explore the silent rovers, laser mirrors, and nuclear probes that transformed human understanding of the cosmos.
+      </p>
+
+      <div class="hud-bar">
+        <button class="btn-action" id="btn-sound-toggle" onclick="toggleAudio()">
+          <span id="sound-icon">🔊</span> Space Telemetry Audio: <strong id="sound-status">ON</strong>
+        </button>
+        <a href="#quiz-section" class="btn-action active">
+          🚀 Take Cadet Mission Quiz
+        </a>
+        <a href="#time-capsule" class="btn-action">
+          📜 Planetary Protection & Time Capsules
+        </a>
+      </div>
+    </header>
+
+    <!-- Solar System Destination Selector -->
+    <section class="system-nav-card">
+      <div class="nav-label">
+        <span>📍 Filter By Cosmic Destination</span>
+      </div>
+      <div class="dest-tabs">
+        <div class="dest-tab active" data-dest="all" onclick="filterByDest('all')">
+          <span class="planet-icon">🌌</span>
+          <span class="dest-name">All Relics</span>
+          <span class="dest-count" id="count-all">6 Featured</span>
+        </div>
+        <div class="dest-tab" data-dest="moon" onclick="filterByDest('moon')">
+          <span class="planet-icon">🌕</span>
+          <span class="dest-name">The Moon</span>
+          <span class="dest-count">240,000 miles</span>
+        </div>
+        <div class="dest-tab" data-dest="mars" onclick="filterByDest('mars')">
+          <span class="planet-icon">🪐</span>
+          <span class="dest-name">Mars</span>
+          <span class="dest-count">140M miles avg</span>
+        </div>
+        <div class="dest-tab" data-dest="deep" onclick="filterByDest('deep')">
+          <span class="planet-icon">✨</span>
+          <span class="dest-name">Deep Space</span>
+          <span class="dest-count">15 Billion miles</span>
+        </div>
+        <div class="dest-tab" data-dest="saturn" onclick="filterByDest('saturn')">
+          <span class="planet-icon">🪐</span>
+          <span class="dest-name">Outer Planets</span>
+          <span class="dest-count">900M miles</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter chips by Status -->
+    <div class="filter-bar">
+      <div class="filter-chips">
+        <button class="filter-chip active" onclick="filterByStatus('all')">All Statuses</button>
+        <button class="filter-chip" onclick="filterByStatus('active')">🟢 Still Transmitting / Active</button>
+        <button class="filter-chip" onclick="filterByStatus('silent')">⚪ Mission Complete (Silent)</button>
+        <button class="filter-chip" onclick="filterByStatus('heroic')">🔴 Noble Grand Finale</button>
+      </div>
+      <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);">
+        Interactive Educational Dossiers
+      </div>
+    </div>
+
+    <!-- Hardware Cards Grid -->
+    <main class="relics-grid" id="relics-grid">
+      <!-- Generated via JS for clean interactivity -->
+    </main>
+
+    <!-- Interactive Mission Quiz & Certificate Section -->
+    <section class="feature-section" id="quiz-section">
+      <div class="sec-tag">Cadet Training & Assessment</div>
+      <h2 class="sec-title">The Cosmic Relic Mission Quiz</h2>
+      <p class="sec-desc">
+        Are you ready to test your knowledge of NASA's historic hardware? Complete this 5-question mission challenge to unlock your personalized, printable NASA Cadet Certificate of Space Exploration!
+      </p>
+
+      <div class="quiz-container" id="quiz-box">
+        <div class="quiz-progress">
+          <span id="q-counter">Question 1 of 5</span>
+          <span id="q-score">Score: 0 / 5</span>
+        </div>
+        <div class="quiz-question" id="q-title">Loading mission prompt...</div>
+        <div class="quiz-options" id="q-options"></div>
+        <div class="quiz-feedback" id="q-feedback"></div>
+        <button class="btn-action active" id="q-next-btn" style="display:none; width: 100%; justify-content: center;" onclick="nextQuestion()">
+          Next Mission Question ➔
+        </button>
+      </div>
+
+      <!-- Certificate Output -->
+      <div class="certificate-wrapper" id="cert-box">
+        <div class="cert-heading">CERTIFICATE OF COSMIC EXPLORATION</div>
+        <div class="cert-sub">This distinction is officially awarded to:</div>
+        <div class="cert-name" id="cert-student-name">Cadet Explorer</div>
+        <p class="cert-text">
+          For demonstrating exemplary scientific curiosity and successfully mastering the histories, engineering breakthroughs, and planetary science legacies of NASA's robotic sentinels and lunar monuments left across the Solar System.
+        </p>
+        <div class="cert-meta">
+          <div>Mission: <strong>NASA Space Apps 2026</strong></div>
+          <div>Specialization: <strong>Planetary Hardware History</strong></div>
+          <div>Status: <strong>Certified Space Enthusiast</strong></div>
+        </div>
+        <div class="no-print" style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+          <button class="btn-action active" onclick="window.print()">🖨️ Print / Save PDF Certificate</button>
+          <button class="btn-action" onclick="resetQuiz()">🔄 Retake Mission Challenge</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Time Capsule & Planetary Protection Section -->
+    <section class="feature-section" id="time-capsule">
+      <div class="sec-tag">Ethical Engineering & History</div>
+      <h2 class="sec-title">Why Did We Leave Them Behind?</h2>
+      <p class="sec-desc">
+        NASA hardware left in space isn't trash—it serves vital scientific, cultural, and environmental purposes.
+      </p>
+
+      <div class="story-grid">
+        <div class="story-card">
+          <h4>🛡️ Planetary Protection</h4>
+          <p>
+            Why did the Cassini spacecraft deliberately dive into Saturn's crushing atmosphere in 2017? To ensure Earth bacteria could never accidentally crash into and contaminate potentially habitable ocean worlds like Enceladus or Titan!
+          </p>
+        </div>
+        <div class="story-card">
+          <h4>🔭 Laser Time Mirrors</h4>
+          <p>
+            Apollo retroreflectors left on the Moon require 0 watts of electricity. For over 50 years, astronomers on Earth have bounced lasers off them every single week to measure the Moon's distance to millimeter accuracy!
+          </p>
+        </div>
+        <div class="story-card">
+          <h4>💿 The Golden Record</h4>
+          <p>
+            Voyager 1 and 2 carry gold-plated copper phonograph records containing greetings in 55 human languages, whale songs, Mozart, and Earth sounds—a billion-year message in a cosmic bottle traveling into the void.
+          </p>
+        </div>
+        <div class="story-card">
+          <h4>🏛️ Future Space Archaeology</h4>
+          <p>
+            One day when humans establish permanent communities on the Moon and Mars, sites like Tranquility Base (Apollo 11) and Meridiani Planum (Opportunity) will be protected world heritage historical parks!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Created for the <strong>NASA International Space Apps Challenge 2026</strong> • Team Pristine Cascade</p>
+      <p style="margin-top: 0.5rem; opacity: 0.75;">
+        Built with NASA Open Data: Planetary Data System (PDS), JPL Missions Archives, and NASA Solar System Exploration.
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- Detailed Hardware Inspection Modal -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnBg(event)">
+    <div class="modal-content" id="modal-content">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-header">
+        <div id="m-loc-badge" class="relic-loc-tag tag-moon">MOON</div>
+        <h2 class="modal-title" id="m-title">Hardware Blueprint</h2>
+        <div style="font-family: var(--font-mono); color: var(--accent-cyan); font-size: 0.85rem;" id="m-subtitle">Component Breakdown & Scientific Discoveries</div>
+      </div>
+
+      <!-- Telemetry Audio Player -->
+      <div class="audio-telemetry-panel">
+        <div class="telemetry-info">
+          <div>📡 <strong>TELEMETRY STATUS:</strong> <span id="m-telemetry-status">Transmitting Carrier Wave</span></div>
+          <div style="color: var(--text-muted); font-size: 0.75rem;">Simulated Deep Space Network (DSN) S-Band / X-Band Radio Frequency</div>
+        </div>
+        <button class="btn-action" onclick="playHardwareTone()">
+          🔊 Play Mission Signal Sound
+        </button>
+      </div>
+
+      <!-- Interactive Hardware Breakdown -->
+      <div class="schematic-box">
+        <div class="schematic-title">
+          <span>⚙️ Key Hardware Modules & Scientific Instruments</span>
+        </div>
+        <div class="parts-grid" id="m-parts-grid">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Deep Dive Science -->
+      <div style="margin-bottom: 1.5rem;">
+        <h3 style="font-family: var(--font-display); font-size: 1.15rem; color: #fff; margin-bottom: 0.5rem;">🔬 The Scientific Legacy</h3>
+        <p id="m-science-text" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;"></p>
+      </div>
+
+      <!-- Kid Fun Fact -->
+      <div style="background: rgba(251, 191, 36, 0.08); border-left: 3px solid var(--accent-amber); padding: 1rem; border-radius: 0 8px 8px 0;">
+        <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-amber); font-weight: 700; margin-bottom: 0.25rem;">💡 DID YOU KNOW? (FOR CADET SCIENTISTS)</div>
+        <div id="m-fun-fact" style="font-size: 0.9rem; color: #f1f5f9;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================================
+       HARDWARE DATA REPOSITORY (Accurate NASA Mission Data)
+       ===================================================================== */
+    const RELICS = [
+      {
+        id: "voyager1",
+        name: "Voyager 1",
+        destination: "deep",
+        destLabel: "Interstellar Space",
+        tagClass: "tag-deep",
+        status: "active",
+        statusLabel: "Still Transmitting (15+ Billion Miles)",
+        statusClass: "status-active",
+        years: "1977 – Present (49+ Years in Flight)",
+        highlight: "Humanity's most distant manufactured object, currently traveling beyond our Sun's magnetic bubble.",
+        power: "Radioisotope Thermoelectric Generator (RTG, Pu-238)",
+        antenna: "3.7-meter High-Gain Parabolic Reflector",
+        science: "First spacecraft to cross the heliopause into interstellar space. Discovered active volcanoes on Jupiter's moon Io and intricate spokes in Saturn's rings.",
+        parts: [
+          { name: "RTG Nuclear Power", desc: "Converts the heat of decaying Plutonium-238 into electricity, keeping its computers warm in the -455°F deep space void." },
+          { name: "Golden Record", desc: "12-inch gold-plated copper phonograph record carrying Earth sounds, pictures, and greetings to extraterrestrial civilizations." },
+          { name: "Magnetometer Boom", desc: "Extends 13 meters away from the spacecraft body to measure the subtle magnetic fields of interstellar space without interference." },
+          { name: "Tape Data Recorder", desc: "Vintage 1970s magnetic tape system that still buffers scientific plasma wave measurements before beaming them back to Earth!" }
+        ],
+        funFact: "Radio signals traveling at the speed of light take more than 22.5 hours to reach Voyager 1 from Earth—and another 22.5 hours to get an answer back!",
+        freq: 440
+      },
+      {
+        id: "apollo-retro",
+        name: "Apollo Laser Retroreflectors",
+        destination: "moon",
+        destLabel: "The Moon (Mare Tranquillitatis & Hadley)",
+        tagClass: "tag-moon",
+        status: "silent",
+        statusLabel: "Permanent Passive Monument",
+        statusClass: "status-silent",
+        years: "1969, 1971, 1972 – Active Forever",
+        highlight: "Zero-power corner-cube prisms that are still actively targeted by Earth-based laser observatories today.",
+        power: "Zero Power Required (Passive Optical Prism)",
+        antenna: "Optical Light Reflection (Nd:YAG Earth Lasers)",
+        science: "Proved that the Moon is spiraling away from Earth at 3.8 centimeters per year, verified Einstein's Theory of General Relativity, and mapped the lunar molten core.",
+        parts: [
+          { name: "Fused Silica Corner Cubes", desc: "100 high-purity glass prisms engineered so any laser photon entering is reflected straight back at the exact same incoming angle." },
+          { name: "Thermal Insulation Ring", desc: "Teflon and titanium thermal shielding protecting the optical array from wild lunar temperature swings (+250°F to -250°F)." },
+          { name: "Sun Shade Baffle", desc: "Prevents direct solar glare from heating the quartz prisms and causing optical distortion." },
+          { name: "Aiming Alignment Gimbal", desc: "Astronauts Neil Armstrong and Buzz Aldrin manually leveled and aimed the device directly toward Earth using a sun shadow compass." }
+        ],
+        funFact: "When a laser fires 100 quadrillion photons from Earth toward the Apollo reflector, only 1 to 5 photons survive the round-trip bounce back into Earth's telescope!",
+        freq: 587
+      },
+      {
+        id: "opportunity",
+        name: "Opportunity Rover ('Oppy')",
+        destination: "mars",
+        destLabel: "Mars (Meridiani Planum)",
+        tagClass: "tag-mars",
+        status: "silent",
+        statusLabel: "Mission Complete (Last Signal June 2018)",
+        statusClass: "status-silent",
+        years: "2004 – 2018 (Operated 14.5 Years!)",
+        highlight: "Designed for a 90-day mission, Oppy explored Mars for over 5,000 sols, trekking a marathon 28 miles.",
+        power: "Solar Arrays with Martian Wind Cleaning Events",
+        antenna: "High-Gain Steerable Dish & UHF Dipole Antenna",
+        science: "Discovered hematite spherules ('blueberries') and sulfate mineral beds, proving conclusively that liquid water once drenched the surface of ancient Mars.",
+        parts: [
+          { name: "Rock Abrasion Tool (RAT)", desc: "Diamond-tipped cutting teeth that ground away the weathered martian crust to expose pristine interior rock for spectrometer sensors." },
+          { name: "Mössbauer Spectrometer", desc: "Iron-composition detector placed directly on rock targets to reveal ancient water-bearing iron minerals like jarosite." },
+          { name: "Rocker-Bogie Suspension", desc: "Six-wheel mechanical articulation allowing the rover to climb over rocks larger than its own wheel diameter without flipping." },
+          { name: "Pancam Stereo Eyes", desc: "Twin mast-mounted multispectral cameras that delivered the first high-definition panoramas of martian craters like Endurance and Victoria." }
+        ],
+        funFact: "Mars's notorious dust storms kept covering Oppy's solar panels, but lucky dust devils ('micro-tornadoes') frequently swept over the rover and cleaned them sparkling clean!",
+        freq: 330
+      },
+      {
+        id: "cassini",
+        name: "Cassini Spacecraft",
+        destination: "saturn",
+        destLabel: "Saturn Atmosphere & Rings",
+        tagClass: "tag-saturn",
+        status: "heroic",
+        statusLabel: "Grand Finale Atmospheric Vaporization",
+        statusClass: "status-heroic",
+        years: "1997 – 2017 (13 Years in Saturn Orbit)",
+        highlight: "Deliberately plunged into Saturn's crushing atmosphere on Sept 15, 2017 to protect potentially habitable ocean moons.",
+        power: "3 Radioisotope Thermoelectric Generators (RTGs)",
+        antenna: "4-meter High-Gain Antenna (also used as Radar)",
+        science: "Discovered hydrothermal plumes spraying water ice into space from Enceladus's underground ocean, and revealed liquid methane lakes on giant moon Titan.",
+        parts: [
+          { name: "INMS Mass Spectrometer", desc: "Sniffed the molecules inside Enceladus's geyser plumes, detecting water vapor, molecular hydrogen, and prebiotic organic compounds." },
+          { name: "Cosmic Dust Analyzer", desc: "Captured and analyzed microscopic ice crystals and ring particles traveling at thousands of miles per hour." },
+          { name: "Huygens Titan Probe", desc: "Detachable ESA lander that parachuted through Titan's orange nitrogen smog, photographing rivers and shores carved by liquid methane!" },
+          { name: "Reaction Control Thrusters", desc: "Fired continuously at 100% power during Cassini's final dive to keep its antenna pointed at Earth until the final millisecond of disintegration." }
+        ],
+        funFact: "Because Cassini detected that moons Enceladus and Titan could harbor alien microbial life, NASA chose to vaporize the spacecraft in Saturn rather than risk crashing into them!",
+        freq: 523
+      },
+      {
+        id: "ingenuity",
+        name: "Ingenuity Mars Helicopter",
+        destination: "mars",
+        destLabel: "Mars (Jezero Crater - Valinor Hills)",
+        tagClass: "tag-mars",
+        status: "silent",
+        statusLabel: "Mission Complete (72 Flights Across Mars)",
+        statusClass: "status-silent",
+        years: "2021 – 2024 (Built for 5 flights, flew 72)",
+        highlight: "The Wright Brothers moment of the 21st century—the first aircraft to achieve powered, controlled flight on another planet.",
+        power: "Solar Panel & 6 Sony Li-ion Battery Cells",
+        antenna: "WLAN Radio Link (Communicating with Perseverance)",
+        science: "Proved aerodynamic flight is possible in Mars's razor-thin atmosphere (less than 1% of Earth's air density), serving as an aerial scout for Perseverance rover.",
+        parts: [
+          { name: "Carbon-Fiber Coaxial Rotors", desc: "Twin 1.2-meter rotor blades spinning in opposite directions at 2,400+ RPM—nearly 10 times faster than an Earth helicopter!" },
+          { name: "Smartphone Processor", desc: "Powered by a commercial Qualcomm Snapdragon 801 processor, far faster than typical radiation-hardened spacecraft computers." },
+          { name: "Autonomous Navigation Camera", desc: "Down-looking sensor tracking ground features at 30 frames per second to calculate position in real time without GPS." },
+          { name: "Internal Fuselage Heaters", desc: "Vital electrical heating pads that kept the helicopter's avionics from freezing solid during -130°F martian winter nights." }
+        ],
+        funFact: "Tucked beneath Ingenuity's solar panel was a tiny postage-stamp-sized swatch of muslin fabric from the original 1903 Wright Brothers flyer from Kitty Hawk!",
+        freq: 659
+      },
+      {
+        id: "insight",
+        name: "InSight Mars Lander",
+        destination: "mars",
+        destLabel: "Mars (Elysium Planitia)",
+        tagClass: "tag-mars",
+        status: "silent",
+        statusLabel: "Mission Complete (Dec 2022 - Covered in Dust)",
+        statusClass: "status-silent",
+        years: "2018 – 2022 (Marsquake Listener)",
+        highlight: "The first robotic explorer dedicated to peering deep beneath the martian surface into its crust, mantle, and metallic core.",
+        power: "Twin 7-foot UltraFlex Solar Arrays",
+        antenna: "UHF Link & X-Band Direct-to-Earth Antennas",
+        science: "Recorded over 1,300 marsquakes and space rock impacts, proving Mars is seismically active and measuring its liquid iron-rich core.",
+        parts: [
+          { name: "SEIS Seismometer", desc: "An ultra-sensitive vibration detector capable of measuring movements as infinitesimal as the width of a single hydrogen atom!" },
+          { name: "Wind & Thermal Shield", desc: "An aerodynamic vacuum dome placed over the seismometer by the robotic arm to block martian wind gusts and freezing temperature shifts." },
+          { name: "HP3 Heat Flow Mole", desc: "A self-hammering mechanical probe designed to burrow up to 16 feet deep to measure internal geothermal heat escaping Mars." },
+          { name: "IDC Deployment Camera", desc: "Arm-mounted color camera used to scan the surface rocks and choose the flattest spot to safely drop the delicate instruments." }
+        ],
+        funFact: "InSight's final photo showed its solar panels covered in a thick blanket of reddish-orange Martian dust, ending its mission with the poetic message: 'My power is really low, so this may be the last image I can send.'",
+        freq: 392
+      }
+    ];
+
+    /* =====================================================================
+       WEB AUDIO TELEMETRY SYNTHESIZER
+       ===================================================================== */
+    let audioCtx = null;
+    let audioEnabled = true;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      document.getElementById('sound-status').innerText = audioEnabled ? 'ON' : 'OFF';
+      document.getElementById('sound-icon').innerText = audioEnabled ? '🔊' : '🔇';
+      if (audioEnabled) {
+        playBeep(660, 0.1);
+      }
+    }
+
+    function playBeep(freq = 520, duration = 0.15) {
+      if (!audioEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {
+        console.warn('Audio not allowed yet:', e);
+      }
+    }
+
+    function playHardwareTone() {
+      if (!audioEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        // Two-tone space carrier signal
+        [520, 660, 880, 1046].forEach((f, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, now + idx * 0.12);
+          gain.gain.setValueAtTime(0.06, now + idx * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.1);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.12);
+          osc.stop(now + idx * 0.12 + 0.11);
+        });
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    /* =====================================================================
+       RENDER RELICS GRID
+       ===================================================================== */
+    let currentDestFilter = 'all';
+    let currentStatusFilter = 'all';
+
+    function renderRelics() {
+      const grid = document.getElementById('relics-grid');
+      grid.innerHTML = '';
+
+      const filtered = RELICS.filter(r => {
+        const matchDest = currentDestFilter === 'all' || r.destination === currentDestFilter;
+        const matchStatus = currentStatusFilter === 'all' || r.status === currentStatusFilter;
+        return matchDest && matchStatus;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: var(--card-bg); border-radius: 16px;">
+            <p style="color: var(--text-muted); font-size: 1.1rem;">No hardware found matching these mission criteria.</p>
+            <button class="btn-action" style="margin-top: 1rem;" onclick="resetFilters()">Reset All Filters</button>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(relic => {
+        const card = document.createElement('article');
+        card.className = 'relic-card';
+        card.innerHTML = `
+          <div class="card-top">
+            <span class="relic-loc-tag ${relic.tagClass}">
+              <span>📍</span> ${relic.destLabel.split(' ')[0]}
+            </span>
+            <span class="status-badge ${relic.statusClass}">
+              ${relic.status === 'active' ? '🟢' : relic.status === 'heroic' ? '🔴' : '⚪'}
+              ${relic.status.toUpperCase()}
+            </span>
+          </div>
+
+          <h3 class="relic-name">${relic.name}</h3>
+          <div class="relic-years">${relic.years}</div>
+
+          <div class="relic-highlight-box">
+            "${relic.highlight}"
+          </div>
+
+          <div class="relic-specs">
+            <div class="spec-item">
+              <span class="spec-label">Power Core</span>
+              <span class="spec-val">${relic.power.split('(')[0]}</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Comms Gear</span>
+              <span class="spec-val">${relic.antenna.split('(')[0]}</span>
+            </div>
+          </div>
+
+          <div class="relic-science">
+            <strong style="color: #cbd5e1; display: block; margin-bottom: 0.25rem;">Key Science Made Possible:</strong>
+            ${relic.science}
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-inspect" onclick="inspectHardware('${relic.id}')">
+              <span>🔍 Inspect Hardware Modules</span>
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterByDest(dest) {
+      currentDestFilter = dest;
+      document.querySelectorAll('.dest-tab').forEach(el => {
+        el.classList.toggle('active', el.getAttribute('data-dest') === dest);
+      });
+      playBeep(480, 0.08);
+      renderRelics();
+    }
+
+    function filterByStatus(status) {
+      currentStatusFilter = status;
+      document.querySelectorAll('.filter-chip').forEach(el => {
+        el.classList.toggle('active', el.textContent.toLowerCase().includes(status) || (status === 'all' && el.textContent.includes('All')));
+      });
+      playBeep(520, 0.08);
+      renderRelics();
+    }
+
+    function resetFilters() {
+      filterByDest('all');
+      filterByStatus('all');
+    }
+
+    /* =====================================================================
+       INSPECTION MODAL
+       ===================================================================== */
+    let activeRelic = null;
+
+    function inspectHardware(id) {
+      const relic = RELICS.find(r => r.id === id);
+      if (!relic) return;
+      activeRelic = relic;
+
+      document.getElementById('m-title').innerText = relic.name;
+      document.getElementById('m-subtitle').innerText = `${relic.destLabel} • ${relic.years}`;
+      document.getElementById('m-loc-badge').className = `relic-loc-tag ${relic.tagClass}`;
+      document.getElementById('m-loc-badge').innerText = relic.destLabel;
+      document.getElementById('m-telemetry-status').innerText = relic.statusLabel;
+      document.getElementById('m-science-text').innerText = relic.science;
+      document.getElementById('m-fun-fact').innerText = relic.funFact;
+
+      const partsGrid = document.getElementById('m-parts-grid');
+      partsGrid.innerHTML = '';
+      relic.parts.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'part-card';
+        item.innerHTML = `
+          <div class="part-name">🔹 ${p.name}</div>
+          <div class="part-desc">${p.desc}</div>
+        `;
+        partsGrid.appendChild(item);
+      });
+
+      document.getElementById('modal-overlay').classList.add('active');
+      playBeep(relic.freq || 600, 0.2);
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('active');
+      playBeep(300, 0.1);
+    }
+
+    function closeModalOnBg(e) {
+      if (e.target.id === 'modal-overlay') {
+        closeModal();
+      }
+    }
+
+    /* =====================================================================
+       MISSION QUIZ & CERTIFICATE SYSTEM
+       ===================================================================== */
+    const QUIZ_QUESTIONS = [
+      {
+        question: "Why do the Apollo laser retroreflectors left on the Moon require 0 watts of electrical power?",
+        options: [
+          "They are powered by nuclear plutonium batteries",
+          "They are passive optical quartz prisms that directly reflect laser light back to Earth",
+          "They absorb energy from solar wind flares",
+          "Astronauts left giant batteries that recharge in the sunlight"
+        ],
+        answer: 1,
+        feedback: "Correct! The corner-cube prisms are purely optical mirrors. Earth observatories fire laser pulses at them and measure the return time to calculate the Moon's distance down to millimeters with zero electrical power required on the Moon!"
+      },
+      {
+        question: "What keeps Voyager 1 and 2's scientific instruments running in the freezing cold of interstellar space?",
+        options: [
+          "Massive fold-out solar panels facing the distant Sun",
+          "Wind turbines that catch the solar wind particles",
+          "Radioisotope Thermoelectric Generators (RTGs) converting plutonium decay heat into electricity",
+          "Chemical rocket fuel burned continuously"
+        ],
+        answer: 2,
+        feedback: "Spot on! In deep space past Saturn, sunlight is way too weak for solar panels. RTGs use the natural heat from decaying Plutonium-238 to generate electricity and keep computers warm."
+      },
+      {
+        question: "What key geologic evidence did the Opportunity rover discover on Mars that proved liquid water once flowed there?",
+        options: [
+          "Underground ice volcanoes and lava tunnels",
+          "Tiny hematite spheres nicknamed 'blueberries' and sulfate mineral layers",
+          "Ancient fossilized alien plants and roots",
+          "A frozen lake inside Victoria Crater"
+        ],
+        answer: 1,
+        feedback: "Brilliant! Opportunity analyzed spherical hematite concretions nicknamed 'blueberries'. These minerals can only form in the presence of acidic liquid water soaking through martian rocks billions of years ago."
+      },
+      {
+        question: "Why did NASA deliberately command the Cassini spacecraft to dive into Saturn's atmosphere in 2017?",
+        options: [
+          "To test if Saturn had a solid rocky surface to land on",
+          "Planetary Protection: To prevent it from ever accidentally crashing into and contaminating ocean moons like Enceladus or Titan",
+          "The spacecraft had run out of radio signals and drifted away",
+          "Saturn's gravity pulled it in against the team's control"
+        ],
+        answer: 1,
+        feedback: "Outstanding! This is the core principle of Planetary Protection. Cassini discovered liquid oceans with hydrothermal vents on Enceladus. To prevent Earth microbes that might have survived inside the spacecraft from contaminating those waters, Cassini made the noble sacrifice of plunging into Saturn!"
+      },
+      {
+        question: "How was the Ingenuity helicopter able to fly in the atmosphere of Mars, which is less than 1% as dense as Earth's?",
+        options: [
+          "By floating with a helium balloon attached to the top",
+          "Using rocket engines powered by liquid hydrogen",
+          "Using ultra-lightweight carbon-fiber blades spinning at over 2,400 RPM",
+          "It only flew during high-speed Martian dust storms"
+        ],
+        answer: 2,
+        feedback: "Exact science! To create lift in air that is 100 times thinner than Earth's, Ingenuity's carbon-fiber coaxial blades had to spin nearly 10 times faster than a conventional terrestrial helicopter!"
+      }
+    ];
+
+    let currentQIdx = 0;
+    let userScore = 0;
+
+    function loadQuestion() {
+      const q = QUIZ_QUESTIONS[currentQIdx];
+      document.getElementById('q-counter').innerText = `Question ${currentQIdx + 1} of ${QUIZ_QUESTIONS.length}`;
+      document.getElementById('q-score').innerText = `Score: ${userScore} / ${QUIZ_QUESTIONS.length}`;
+      document.getElementById('q-title').innerText = q.question;
+
+      const optsContainer = document.getElementById('q-options');
+      optsContainer.innerHTML = '';
+
+      q.options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.innerText = optText;
+        btn.onclick = () => selectAnswer(idx);
+        optsContainer.appendChild(btn);
+      });
+
+      document.getElementById('q-feedback').style.display = 'none';
+      document.getElementById('q-next-btn').style.display = 'none';
+    }
+
+    function selectAnswer(selectedIdx) {
+      const q = QUIZ_QUESTIONS[currentQIdx];
+      const buttons = document.querySelectorAll('.quiz-option');
+
+      buttons.forEach(btn => btn.disabled = true);
+
+      if (selectedIdx === q.answer) {
+        buttons[selectedIdx].classList.add('correct');
+        userScore++;
+        playBeep(880, 0.25);
+      } else {
+        buttons[selectedIdx].classList.add('incorrect');
+        buttons[q.answer].classList.add('correct');
+        playBeep(220, 0.3);
+      }
+
+      document.getElementById('q-score').innerText = `Score: ${userScore} / ${QUIZ_QUESTIONS.length}`;
+
+      const fb = document.getElementById('q-feedback');
+      fb.innerHTML = `<strong>${selectedIdx === q.answer ? '✅ Mission Success!' : '⚠️ Telemetry Adjustment:'}</strong> ${q.feedback}`;
+      fb.style.display = 'block';
+
+      const nextBtn = document.getElementById('q-next-btn');
+      if (currentQIdx < QUIZ_QUESTIONS.length - 1) {
+        nextBtn.innerText = 'Next Mission Question ➔';
+      } else {
+        nextBtn.innerText = '🎉 View Cadet Certificate of Exploration';
+      }
+      nextBtn.style.display = 'flex';
+    }
+
+    function nextQuestion() {
+      if (currentQIdx < QUIZ_QUESTIONS.length - 1) {
+        currentQIdx++;
+        loadQuestion();
+        playBeep(520, 0.08);
+      } else {
+        showCertificate();
+      }
+    }
+
+    function showCertificate() {
+      document.getElementById('quiz-box').style.display = 'none';
+      const certBox = document.getElementById('cert-box');
+      certBox.style.display = 'block';
+
+      // Ask for student name
+      let cadetName = prompt("Enter your name or callsign for your Official NASA Space Explorer Certificate:", "Cadet Explorer");
+      if (!cadetName || cadetName.trim() === '') cadetName = "Cadet Space Explorer";
+      document.getElementById('cert-student-name').innerText = cadetName;
+
+      playHardwareTone();
+      certBox.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetQuiz() {
+      currentQIdx = 0;
+      userScore = 0;
+      document.getElementById('quiz-box').style.display = 'block';
+      document.getElementById('cert-box').style.display = 'none';
+      loadQuestion();
+      document.getElementById('quiz-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* =====================================================================
+       ANIMATED CANVAS STARFIELD
+       ===================================================================== */
+    const canvas = document.getElementById('star-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function initStars() {
+      stars = [];
+      const numStars = Math.floor((canvas.width * canvas.height) / 3200);
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5 + 0.3,
+          alpha: Math.random() * 0.8 + 0.2,
+          speed: Math.random() * 0.02 + 0.005
+        });
+      }
+    }
+
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        star.alpha += star.speed;
+        if (star.alpha > 1 || star.alpha < 0.2) {
+          star.speed = -star.speed;
+        }
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(animateStars);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    // Initial Setup
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      animateStars();
+      renderRelics();
+      loadQuestion();
+    });
+  </script>
+</body>
+</html>

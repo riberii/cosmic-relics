@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmic Relics - 7-Slide Project Demonstration | NASA Space Apps Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090c15;
+      --card-bg: rgba(18, 24, 43, 0.85);
+      --accent: #38bdf8;
+      --accent-alt: #a855f7;
+      --accent-gold: #fbbf24;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(56, 189, 248, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+    }
+
+    /* Top Controls */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1000px;
+      margin-bottom: 1rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      backdrop-filter: blur(8px);
+    }
+
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent);
+      color: #fff;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+    }
+
+    /* Slide Deck Container */
+    .deck-container {
+      width: 100%;
+      max-width: 1000px;
+      aspect-ratio: 16 / 9;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(56, 189, 248, 0.15);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 3rem 3.5rem;
+      flex-direction: column;
+      justify-content: space-between;
+      animation: fadeIn 0.3s ease;
+      background-size: cover;
+      position: relative;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.99); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Slide Content Elements */
+    .slide-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.75rem;
+    }
+
+    .slide-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.25rem;
+    }
+
+    .slide-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .slide-body {
+      flex-grow: 1;
+      padding: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Slide 1 - Title */
+    .title-slide {
+      text-align: center;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    .title-hero {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 40%, var(--accent) 80%, var(--accent-alt) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .title-subtitle {
+      font-size: 1.25rem;
+      color: var(--accent);
+      font-weight: 500;
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .meta-box {
+      margin-top: 1.5rem;
+      display: inline-flex;
+      gap: 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.75rem 2rem;
+      border-radius: 50px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+
+    /* Grid Layouts for Slides */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .info-card h4 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .info-card p {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .highlight-stat {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      margin-bottom: 0.25rem;
+    }
+
+    /* Slide Navigation Dots */
+    .nav-bar {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .dot.active {
+      background: var(--accent);
+      width: 24px;
+      border-radius: 10px;
+    }
+
+    /* PRINT TO PDF OPTIMIZATION (Strictly 7 Pages) */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+      .controls, .nav-bar {
+        display: none !important;
+      }
+      .deck-container {
+        border: none !important;
+        box-shadow: none !important;
+        max-width: 100% !important;
+        aspect-ratio: auto !important;
+      }
+      .slide {
+        display: flex !important;
+        page-break-after: always;
+        height: 100vh;
+        max-height: 100vh;
+        padding: 2.5rem !important;
+        background: #fff !important;
+        color: #111 !important;
+        border-bottom: 2px solid #ccc;
+      }
+      .slide-title, .title-hero, h4 {
+        color: #000 !important;
+        -webkit-text-fill-color: #000 !important;
+      }
+      .info-card, .meta-box {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #1e293b !important;
+      }
+      .info-card p, .slide-desc, .title-subtitle {
+        color: #334155 !important;
+      }
+      .slide-tag, .slide-footer {
+        color: #64748b !important;
+      }
+      .highlight-stat {
+        color: #0369a1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Controls Bar -->
+  <div class="controls">
+    <div class="badge">NASA SPACE APPS DEMONSTRATION • STRICT 7-SLIDE DECK</div>
+    <div style="display: flex; gap: 0.5rem;">
+      <button class="btn" onclick="prevSlide()">◀ Previous</button>
+      <span id="slide-num" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; align-self: center; padding: 0 0.5rem;">Slide 1 / 7</span>
+      <button class="btn" onclick="nextSlide()">Next ▶</button>
+      <button class="btn" style="background: var(--accent); color: #000; font-weight: bold;" onclick="window.print()">🖨️ Export PDF (7 Slides)</button>
+    </div>
+  </div>
+
+  <!-- Deck Wrapper -->
+  <div class="deck-container">
+
+    <!-- SLIDE 1: Title & Overview -->
+    <section class="slide active title-slide" id="slide-1">
+      <div>
+        <div class="slide-tag">NASA Space Apps Challenge 2026 • Official Project Demonstration</div>
+        <h1 class="title-hero">COSMIC RELICS</h1>
+        <p class="title-subtitle">NASA's Solar Time Capsule: Telling the Story of Robotic Pioneers Across Space</p>
+      </div>
+
+      <div class="meta-box">
+        <div>Team: <strong>Pristine Cascade</strong></div>
+        <div>Audience: <strong>School-Age Space Enthusiasts (Ages 8–15)</strong></div>
+        <div>Format: <strong>Interactive Web Platform & Museum</strong></div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 1 of 7</span>
+        <span>Challenge: Tell the Story of Hardware Left Across the Solar System</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: Challenge & Inspiration -->
+    <section class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="slide-tag">01 • Problem & Vision</div>
+        <h2 class="slide-title">Turning "Space Hardware" Into Living Science Stories</h2>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="info-card">
+            <h4>🛰️ The Challenge Reality</h4>
+            <p>
+              Since the 1960s, NASA has deployed hundreds of rovers, orbiters, seismometers, and deep-space probes across the Solar System. When missions end, these machines remain behind on the Moon, on Mars, and in interstellar space.
+            </p>
+            <p style="margin-top: 0.75rem;">
+              School-age students often view them as static "space junk" rather than what they truly are: humanity's greatest scientific outposts and historical monuments.
+            </p>
+          </div>
+          <div class="info-card">
+            <h4>🎯 Our Educational Mission</h4>
+            <p>
+              <strong>Cosmic Relics</strong> bridges the gap between hardware engineering and scientific discovery for youth.
+            </p>
+            <ul style="margin-top: 0.75rem; padding-left: 1.25rem; font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+              <li>Explain <em>how</em> the machines were engineered to survive extreme worlds.</li>
+              <li>Showcase <em>what</em> groundbreaking science they unlocked for humanity.</li>
+              <li>Empower students with interactive simulation, sound, and certification.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 2 of 7</span>
+        <span>Target: Inspiring the Next Generation of Space Explorers & Engineers</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: The Moon & Mars Relics -->
+    <section class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="slide-tag">02 • Key Missions</div>
+        <h2 class="slide-title">Hardware on the Moon & Mars: Silent Sentinels</h2>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="info-card">
+            <div class="highlight-stat">0 Watts</div>
+            <h4>🌕 Apollo Retroreflectors</h4>
+            <p>
+              <strong>Hardware:</strong> 100 quartz corner-cube prisms placed by Apollo 11, 14, and 15 astronauts.<br><br>
+              <strong>Science:</strong> Requiring 0 watts of power, they still reflect Earth lasers today to prove the Moon drifts 3.8 cm/year!
+            </p>
+          </div>
+
+          <div class="info-card">
+            <div class="highlight-stat">14.5 Yrs</div>
+            <h4>🪐 Opportunity Rover</h4>
+            <p>
+              <strong>Hardware:</strong> Rock Abrasion Tool (RAT), solar panels cleaned by Martian wind devils, Rocker-Bogie wheels.<br><br>
+              <strong>Science:</strong> Discovered hematite "blueberries" proving ancient Mars was drenched in liquid water.
+            </p>
+          </div>
+
+          <div class="info-card">
+            <div class="highlight-stat">72 Flights</div>
+            <h4>🚁 Ingenuity Helicopter</h4>
+            <p>
+              <strong>Hardware:</strong> Carbon-fiber coaxial blades spinning at 2,400+ RPM in 1% atmosphere, smartphone chip.<br><br>
+              <strong>Science:</strong> First powered atmospheric flight on another planet; scouted routes for Perseverance rover.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 3 of 7</span>
+        <span>Engineering Feats: Surviving Dust Storms, Lunar Nights, and Thin Air</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: Deep Space & Gas Giants -->
+    <section class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="slide-tag">03 • Interstellar & Outer Planets</div>
+        <h2 class="slide-title">Voyager & Cassini: Beyond the Horizons</h2>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="info-card">
+            <h4>✨ Voyager 1 & 2: The Interstellar Voyagers</h4>
+            <p><strong>Status:</strong> Active in Interstellar Space • 15+ Billion Miles from Earth (49 Years in Flight!)</p>
+            <p style="margin-top: 0.5rem;">
+              <strong>Hardware Architecture:</strong> Powered by Radioisotope Thermoelectric Generators (RTGs) converting plutonium decay heat into electricity. Equipped with the 12-inch gold-plated copper <em>Golden Record</em>.
+            </p>
+            <p style="margin-top: 0.5rem;">
+              <strong>Science:</strong> First man-made object to cross the heliopause into interstellar space, recording raw cosmic rays and interstellar magnetic fields.
+            </p>
+          </div>
+
+          <div class="info-card">
+            <h4>🪐 Cassini-Huygens: The Noble Grand Finale</h4>
+            <p><strong>Fate:</strong> Deliberately plunged into Saturn's atmosphere on September 15, 2017</p>
+            <p style="margin-top: 0.5rem;">
+              <strong>Planetary Protection:</strong> Cassini discovered water-ice geysers spraying from Enceladus's underground ocean.
+            </p>
+            <p style="margin-top: 0.5rem;">
+              <strong>The Sacrifice:</strong> To prevent any microscopic Earth microbe from surviving and contaminating Enceladus or Titan, NASA steered Cassini into Saturn's crushing clouds to vaporize safely.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 4 of 7</span>
+        <span>Deep Space Network (DSN) Telemetry & Planetary Protection Protocols</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: The Solution & Interactive Features -->
+    <section class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="slide-tag">04 • Project Solution</div>
+        <h2 class="slide-title">Cosmic Relics: The Interactive Web Application</h2>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="info-card">
+            <h4>🌌 Interactive Solar Explorer</h4>
+            <p>
+              Students filter relics by destination (Moon, Mars, Deep Space, Outer Worlds) and status (Active, Silent, Heroic). Dynamic starfield HUD provides real-time immersion.
+            </p>
+          </div>
+
+          <div class="info-card">
+            <h4>🔍 Blueprint Inspection Modals</h4>
+            <p>
+              Interactive breakdowns of hardware components (RTGs, Rock Abrasion Tools, SEIS seismometers) paired with kid-friendly "Did You Know?" science discovery cards.
+            </p>
+          </div>
+
+          <div class="info-card">
+            <h4>🔊 Web Audio Synthesizer</h4>
+            <p>
+              Synthesizes real radio carrier frequencies and telemetry beeps directly in the browser via the HTML5 Web Audio API—zero external audio dependencies.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 5 of 7</span>
+        <span>Zero-install, browser-native educational platform accessible anywhere</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: Technical Implementation & NASA Data -->
+    <section class="slide" id="slide-6">
+      <div class="slide-header">
+        <div class="slide-tag">05 • Data & Architecture</div>
+        <h2 class="slide-title">Grounded in Open NASA Scientific Data</h2>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="info-card">
+            <h4>🛰️ NASA Data Sources Utilized</h4>
+            <ul style="padding-left: 1.25rem; font-size: 0.85rem; line-height: 1.6; color: #cbd5e1;">
+              <li><strong>NASA Planetary Data System (PDS):</strong> Instrument operational logs, Mössbauer & RAT spectrometry from Opportunity, SEIS telemetry from InSight.</li>
+              <li><strong>NASA JPL Mission Archives:</strong> Voyager 1 & 2 interstellar trajectory, Cassini Grand Finale timeline, and Ingenuity flight logs.</li>
+              <li><strong>Apollo Lunar Surface Journal (ALSJ):</strong> LRRR deployment coords and McDonald Observatory laser range verification data.</li>
+            </ul>
+          </div>
+
+          <div class="info-card">
+            <h4>💻 Technology Stack</h4>
+            <ul style="padding-left: 1.25rem; font-size: 0.85rem; line-height: 1.6; color: #cbd5e1;">
+              <li><strong>HTML5 & CSS3:</strong> Ultra-responsive, accessible glassmorphism interface styled with modern typography and fluid viewport scaling.</li>
+              <li><strong>Vanilla JavaScript (ES6+):</strong> Lightweight state filtering, modal controller, and dynamic quiz assessment engine.</li>
+              <li><strong>HTML5 Canvas & Web Audio API:</strong> Procedural starfield rendering and synthesized space telemetry tones.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 6 of 7</span>
+        <span>Built with 100% Open Web Standards & Verifiable NASA Scientific Data</span>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: Impact & Cadet Certification -->
+    <section class="slide" id="slide-7">
+      <div class="slide-header">
+        <div class="slide-tag">06 • Impact & Future Horizon</div>
+        <h2 class="slide-title">Gamified Learning & Future Space Heritage</h2>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="info-card">
+            <h4>🎓 Gamified Cadet Mission Challenge</h4>
+            <p>
+              Students complete a 5-question mission quiz testing their comprehension of hardware specs, water discovery on Mars, and planetary protection.
+            </p>
+            <p style="margin-top: 0.75rem;">
+              <strong>Personalized Certificate:</strong> Generates a printable, customized <em>Certificate of Cosmic Exploration</em> that teachers and students can print or save to PDF!
+            </p>
+          </div>
+
+          <div class="info-card">
+            <h4>🏛️ Space Archaeology of Tomorrow</h4>
+            <p>
+              As NASA's Artemis program returns astronauts to the Moon and prepares for Mars, these historic sites will become preserved world heritage parks.
+            </p>
+            <p style="margin-top: 0.75rem;">
+              <strong>The Inspiring Takeaway:</strong> We teach children that humanity's robotic explorers aren't abandoned junk—they are eternal beacons of human curiosity that paved the path for future astronauts.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Slide 7 of 7</span>
+        <span>Team Pristine Cascade • Ready for Global Judging</span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Slide Dots Navigation -->
+  <div class="nav-bar" id="dots-bar">
+    <div class="dot active" onclick="goToSlide(1)"></div>
+    <div class="dot" onclick="goToSlide(2)"></div>
+    <div class="dot" onclick="goToSlide(3)"></div>
+    <div class="dot" onclick="goToSlide(4)"></div>
+    <div class="dot" onclick="goToSlide(5)"></div>
+    <div class="dot" onclick="goToSlide(6)"></div>
+    <div class="dot" onclick="goToSlide(7)"></div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 7;
+
+    function showSlide(num) {
+      if (num < 1) num = 1;
+      if (num > totalSlides) num = totalSlides;
+      currentSlide = num;
+
+      document.querySelectorAll('.slide').forEach((s, idx) => {
+        s.classList.toggle('active', idx + 1 === currentSlide);
+      });
+
+      document.querySelectorAll('.dot').forEach((d, idx) => {
+        d.classList.toggle('active', idx + 1 === currentSlide);
+      });
+
+      document.getElementById('slide-num').innerText = `Slide ${currentSlide} / ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function goToSlide(n) {
+      showSlide(n);
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+  </script>
+</body>
+</html>
